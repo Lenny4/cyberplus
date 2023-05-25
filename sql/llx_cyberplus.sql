@@ -16,14 +16,16 @@
 --
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS `llx_cyberplus`(
-	`rowid`			int(11) AUTO_INCREMENT,  
-	`ref`			varchar(32) NOT NULL,  
-	`key`			varchar(32) NOT NULL, 
-	`entity`		int(11) DEFAULT 1 NOT NULL,	  
-	`datec`			datetime NOT NULL,  
-	`type`			varchar(32) NOT NULL,
-	`fk_object`      int(11) DEFAULT 0 NOT NULL,
+CREATE TABLE IF NOT EXISTS `llx_cyberplus`
+(
+    `rowid`     int(11) AUTO_INCREMENT,
+    `ref`       varchar(32)       NOT NULL,
+    `key`       varchar(32)       NOT NULL,
+    `entity`    int(11) DEFAULT 1 NOT NULL,
+    `datec`     datetime          NOT NULL,
+    `type`      varchar(32)       NOT NULL,
+    `fk_object` int(11) DEFAULT 0 NOT NULL,
 
-  PRIMARY KEY (`rowid`)    
-)ENGINE=innodb DEFAULT CHARSET=utf8;
+    PRIMARY KEY (`rowid`)
+) ENGINE = innodb
+  DEFAULT CHARSET = utf8;

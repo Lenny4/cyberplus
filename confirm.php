@@ -16,31 +16,31 @@
  */
 
 /**
- *     	\file       htdocs/public/cmcic/confirm.php
- *		\ingroup    cmcic
+ *        \file       htdocs/public/cmcic/confirm.php
+ *        \ingroup    cmcic
  */
 
-define("NOLOGIN",1);		// This means this output page does not require to be logged.
-define("NOCSRFCHECK",1);	// We accept to go on this page from external web site.
+define("NOLOGIN", 1);        // This means this output page does not require to be logged.
+define("NOCSRFCHECK", 1);    // We accept to go on this page from external web site.
 
-$res=@include("../main.inc.php");					// For root directory
-if (! $res) $res=@include("../../main.inc.php");	// For "custom" directory
+$res = @include("../main.inc.php");                    // For root directory
+if (!$res) $res = @include("../../main.inc.php");    // For "custom" directory
 
-require_once(DOL_DOCUMENT_ROOT."/core/lib/company.lib.php");
-require_once(DOL_DOCUMENT_ROOT."/core/lib/security.lib.php");
-require_once(DOL_DOCUMENT_ROOT."/core/lib/date.lib.php");
-require_once(DOL_DOCUMENT_ROOT."/core/lib/functions.lib.php");
-require_once(DOL_DOCUMENT_ROOT."/core/lib/functions2.lib.php");
-require_once(DOL_DOCUMENT_ROOT.'/core/class/CMailFile.class.php');
-require_once(DOL_DOCUMENT_ROOT."/compta/facture/class/facture.class.php");
-require_once(DOL_DOCUMENT_ROOT."/compta/paiement/class/paiement.class.php");
-require_once(DOL_DOCUMENT_ROOT."/commande/class/commande.class.php");
+require_once(DOL_DOCUMENT_ROOT . "/core/lib/company.lib.php");
+require_once(DOL_DOCUMENT_ROOT . "/core/lib/security.lib.php");
+require_once(DOL_DOCUMENT_ROOT . "/core/lib/date.lib.php");
+require_once(DOL_DOCUMENT_ROOT . "/core/lib/functions.lib.php");
+require_once(DOL_DOCUMENT_ROOT . "/core/lib/functions2.lib.php");
+require_once(DOL_DOCUMENT_ROOT . '/core/class/CMailFile.class.php');
+require_once(DOL_DOCUMENT_ROOT . "/compta/facture/class/facture.class.php");
+require_once(DOL_DOCUMENT_ROOT . "/compta/paiement/class/paiement.class.php");
+require_once(DOL_DOCUMENT_ROOT . "/commande/class/commande.class.php");
 
 dol_include_once('/cyberplus/class/cyberplus.class.php');
-dol_syslog('CyberPlus: confirmation page has been called'); 
+dol_syslog('CyberPlus: confirmation page has been called');
 // Security check
-if (empty($conf->cyberplus->enabled)) 
-    exit;
+if (empty($conf->cyberplus->enabled))
+	exit;
 
 $langs->setDefaultLang('fr_FR');
 
@@ -53,64 +53,55 @@ $langs->load("errors");
 $langs->load("cyberplus@cyberplus");
 
 
-
 // Check module configuration
 $error = false;
-dol_syslog('CyberPlus: Check configuration'); 
+dol_syslog('CyberPlus: Check configuration');
 
 // Check module configuration
-if (empty($conf->global->API_KEY))
-{
+if (empty($conf->global->API_KEY)) {
 	$error = true;
-	dol_syslog('CyberPlus: Configuration error : key is not defined');    
+	dol_syslog('CyberPlus: Configuration error : key is not defined');
 }
 
-if (empty($conf->global->API_SHOP_ID))
-{
+if (empty($conf->global->API_SHOP_ID)) {
 	$error = true;
-	dol_syslog('CyberPlus: Configuration error : society ID is not defined');    
-} 
-    
-if ($error)
-{
-    exit;
+	dol_syslog('CyberPlus: Configuration error : society ID is not defined');
+}
+
+if ($error) {
+	exit;
 }
 
 // Controle signature
 $data = $_POST;
 $fields = array();
-foreach ($data as $name => $value)
-{
-	if(substr($name, 0, 5) == 'vads_') 
-	{
+foreach ($data as $name => $value) {
+	if (substr($name, 0, 5) == 'vads_') {
 		$name = substr($name, 5);
 		$fields[$name] = $value;
 	}
 }
 
 
-ksort($fields); 
-$payment_config =$fields["payment_config"];
+ksort($fields);
+$payment_config = $fields["payment_config"];
 $signature = '';
 $trans_id = $fields["trans_id"];
 
-foreach ($fields as $name => $value)
-{
-	$signature .= $value.'+';
-}	
+foreach ($fields as $name => $value) {
+	$signature .= $value . '+';
+}
 $signature .= $conf->global->API_KEY;
 $signature = sha1($signature);
 $received = GETPOST('signature');
 
-if (strcmp($signature, $received) != 0)
-{
+if (strcmp($signature, $received) != 0) {
 	$error = true;
-	dol_syslog('CyberPlus: Received signature differs. Received : '.$received.', computed : '.$signature);
+	dol_syslog('CyberPlus: Received signature differs. Received : ' . $received . ', computed : ' . $signature);
 }
 
-if ($error)
-{
-    exit;
+if ($error) {
+	exit;
 }
 
 $key = $fields['order_id'];
@@ -118,8 +109,7 @@ $cyberplus = new CyberPlus($db);
 $result = $cyberplus->fetch('', $key);
 
 
-if ($result <= 0)
-{
+if ($result <= 0) {
 	$error = true;
 	dol_syslog('CyberPlus: Invoice/order with specified reference does not exist, confirmation payment email has not been sent');
 	exit;
@@ -128,7 +118,7 @@ if ($result <= 0)
 $isInvoice = ($cyberplus->type == 'invoice' ? true : false);
 
 $item = ($isInvoice) ? new Facture($db) : new Commande($db);
-$result = $item->fetch($cyberplus->fk_object);	
+$result = $item->fetch($cyberplus->fk_object);
 $item->fetch_thirdparty();
 
 $referenceDolibarr = $item->ref;
@@ -137,175 +127,159 @@ $dateTransaction = $fields['trans_date'];
 $referenceAutorisation = $fields['auth_number'];
 
 $amountTransaction = $fields['effective_amount'];
-$clientBankName = ''; 
+$clientBankName = '';
 $clientName = $item->thirdparty->name;
 
 $substit = array(
 	'__OBJREF__' => $referenceDolibarr,
 	'__SOCNAM__' => $conf->global->MAIN_INFO_SOCIETE_NOM,
 	'__SOCMAI__' => $conf->global->MAIN_INFO_SOCIETE_MAIL,
-	'__CLINAM__' => $clientName,                
-	'__AMOOBJ__' => $amountTransaction/100,
+	'__CLINAM__' => $clientName,
+	'__AMOOBJ__' => $amountTransaction / 100,
 );
-	
+
 $vads_result = intval($fields['result']);
 $success = ($vads_result == 0 ? true : false);
 
 $presentation_date = $fields['presentation_date']; //modification GIDM
-$split_presentation_date=str_split($presentation_date,2); //modification GIDM
+$split_presentation_date = str_split($presentation_date, 2); //modification GIDM
 
-$unix_presentation_date =  gmmktime( //modification GIDM
-    $split_presentation_date['4'],
-    $split_presentation_date['5'],
-    $split_presentation_date['6'],
-    $split_presentation_date['2'],
-    $split_presentation_date['3'],
-    $split_presentation_date['0'].$split_presentation_date['1']
+$unix_presentation_date = gmmktime( //modification GIDM
+	$split_presentation_date['4'],
+	$split_presentation_date['5'],
+	$split_presentation_date['6'],
+	$split_presentation_date['2'],
+	$split_presentation_date['3'],
+	$split_presentation_date['0'] . $split_presentation_date['1']
 );
-  
-// Update DB
-if ($success)
-{
-	dol_syslog('CyberPlus: Payment accepted');
-	
-    // If order, first convert it into invoice, then mark is as paid
-    if (!$isInvoice)
-    { 
-        $item->fetch_lines();
-        
-        // Create invoice
-        $invoice = new Facture($db);
-        $result = $invoice->createFromOrder($item);
-        
-        $item = new Facture($db);
-        $item->fetch($invoice->id);
-        $item->fetch_thirdparty();                  
-    }
-    
-	
-	  
-    // Set transaction reference 
-    $item->setValueFrom('ref_int', $referenceTransaction);
-    $id = $item->id;        
-    
-    $db->begin();
-    
-    $amount = $amountTransaction/100; // Convert to EUR
-    
 
-    // Creation of payment line
-    $payment = new Paiement($db);
-    $payment->datepaye     = $unix_presentation_date; //modification GIDM
-    $payment->amounts      = array($id => price2num($amount));  
-    //$payment->amount      = $amount;    
-    $payment->paiementid   = $conf->global->BANK_ACCOUNT_PAYMENT_ID ? $conf->global->BANK_ACCOUNT_PAYMENT_ID : dol_getIdFromCode($db, 'CB', 'c_paiement');
-    $payment->num_paiement = $referenceAutorisation;
-    $payment->num_payment  = $trans_id; //modification GIDM
-    $payment->note         = '';
-    
+// Update DB
+if ($success) {
+	dol_syslog('CyberPlus: Payment accepted');
+
+	// If order, first convert it into invoice, then mark is as paid
+	if (!$isInvoice) {
+		$item->fetch_lines();
+
+		// Create invoice
+		$invoice = new Facture($db);
+		$result = $invoice->createFromOrder($item);
+
+		$item = new Facture($db);
+		$item->fetch($invoice->id);
+		$item->fetch_thirdparty();
+	}
+
+
+	// Set transaction reference
+	$item->setValueFrom('ref_int', $referenceTransaction);
+	$id = $item->id;
+
+	$db->begin();
+
+	$amount = $amountTransaction / 100; // Convert to EUR
+
+
+	// Creation of payment line
+	$payment = new Paiement($db);
+	$payment->datepaye = $unix_presentation_date; //modification GIDM
+	$payment->amounts = array($id => price2num($amount));
+	//$payment->amount      = $amount;
+	$payment->paiementid = $conf->global->BANK_ACCOUNT_PAYMENT_ID ? $conf->global->BANK_ACCOUNT_PAYMENT_ID : dol_getIdFromCode($db, 'CB', 'c_paiement');
+	$payment->num_paiement = $referenceAutorisation;
+	$payment->num_payment = $trans_id; //modification GIDM
+	$payment->note = '';
+
 	// Fix agenda module
-	$salesrep = $item->thirdparty->getSalesRepresentatives($user);			
-				
-	if (count($salesrep) > 0)
-	{
+	$salesrep = $item->thirdparty->getSalesRepresentatives($user);
+
+	if (count($salesrep) > 0) {
 		$val = array_shift($salesrep);
 		$user->id = $val['id'];
-	}
-	else
-	{
+	} else {
 		$user->id = 1;
 	}
-	
-    $paymentId = $payment->create($user, $conf->global->UPDATE_INVOICE_STATUT);
 
-    if ($paymentId < 0)
-    {
-        dol_syslog('CyberPlus: Payment has not been created in the database');
-    }
-    else
-    {
-        dol_syslog('CyberPlus: Payment has been created in the database : id = '.$paymentId);
-        dol_syslog('CyberPlus: Bank account to credit : id = '.$conf->global->BANK_ACCOUNT_ID);
-        dol_syslog('CyberPlus: Bank account test : result = '.!empty($conf->global->BANK_ACCOUNT_ID));
+	$paymentId = $payment->create($user, $conf->global->UPDATE_INVOICE_STATUT);
 
-        $payment->addPaymentToBank($user, 'payment', '(CustomerInvoicePayment)', $conf->global->BANK_ACCOUNT_ID, $clientName, $clientBankName);
+	if ($paymentId < 0) {
+		dol_syslog('CyberPlus: Payment has not been created in the database');
+	} else {
+		dol_syslog('CyberPlus: Payment has been created in the database : id = ' . $paymentId);
+		dol_syslog('CyberPlus: Bank account to credit : id = ' . $conf->global->BANK_ACCOUNT_ID);
+		dol_syslog('CyberPlus: Bank account test : result = ' . !empty($conf->global->BANK_ACCOUNT_ID));
+
+		$payment->addPaymentToBank($user, 'payment', '(CustomerInvoicePayment)', $conf->global->BANK_ACCOUNT_ID, $clientName, $clientBankName);
 
 		/*if (!empty($conf->global->BANK_ACCOUNT_ID))
 		{
-			      
-		} */       
-    }
-                
-    $db->commit(); 
-    
-    $subject = ($isInvoice ? $langs->transnoentities('InvoiceSuccessPaymentEmailSubject') : $langs->transnoentities('OrderSuccessPaymentEmailSubject'));         
-    $message = ($isInvoice ? $langs->transnoentities('InvoiceSuccessPaymentEmailBody') : $langs->transnoentities('OrderSuccessPaymentEmailBody'));
-    
-    $subject = make_substitutions($subject, $substit);           
-    $message = make_substitutions($message, $substit);        
-          
-}else{
 
-    dol_syslog('CyberPlus: Payment refused');
-    $message = '';
-    
-    switch($vads_result)
-    {
-    	case 17 : 
-    		$message = $langs->transnoentities('ErrorPaymentCanceledEmail');
-    	break;
-    	case 5 : 
-    		$message = $langs->transnoentities('ErrorPaymentUnauthorizedEmail');
-    	break;  
-    	default : 
-    		$message = $langs->transnoentities('ErrorPaymentTechnicalErrorEmail');
-    	break;  	
-    }
-    
-    $subject = ($isInvoice ? $langs->transnoentities('InvoiceErrorPaymentEmailSubject') : $langs->transnoentities('OrderErrorPaymentEmailSubject'));         
-    if ($vads_result != 17)
-    {
-    	$message .= ($isInvoice ? $langs->transnoentities('InvoiceErrorPaymentEmailBody') : $langs->transnoentities('OrderErrorPaymentEmailBody'));    
-    }
-    $subject = make_substitutions($subject, $substit);           
-    $message = make_substitutions($message, $substit);    
+		} */
+	}
+
+	$db->commit();
+
+	$subject = ($isInvoice ? $langs->transnoentities('InvoiceSuccessPaymentEmailSubject') : $langs->transnoentities('OrderSuccessPaymentEmailSubject'));
+	$message = ($isInvoice ? $langs->transnoentities('InvoiceSuccessPaymentEmailBody') : $langs->transnoentities('OrderSuccessPaymentEmailBody'));
+
+	$subject = make_substitutions($subject, $substit);
+	$message = make_substitutions($message, $substit);
+
+} else {
+
+	dol_syslog('CyberPlus: Payment refused');
+	$message = '';
+
+	switch ($vads_result) {
+		case 17 :
+			$message = $langs->transnoentities('ErrorPaymentCanceledEmail');
+			break;
+		case 5 :
+			$message = $langs->transnoentities('ErrorPaymentUnauthorizedEmail');
+			break;
+		default :
+			$message = $langs->transnoentities('ErrorPaymentTechnicalErrorEmail');
+			break;
+	}
+
+	$subject = ($isInvoice ? $langs->transnoentities('InvoiceErrorPaymentEmailSubject') : $langs->transnoentities('OrderErrorPaymentEmailSubject'));
+	if ($vads_result != 17) {
+		$message .= ($isInvoice ? $langs->transnoentities('InvoiceErrorPaymentEmailBody') : $langs->transnoentities('OrderErrorPaymentEmailBody'));
+	}
+	$subject = make_substitutions($subject, $substit);
+	$message = make_substitutions($message, $substit);
 }
 
-if (!$error)
-{
-    //Get data for email  
+if (!$error) {
+	//Get data for email
 	$sendto = $item->thirdparty->email;
-  
 
-    $from = $conf->global->MAIN_INFO_SOCIETE_MAIL;
-             
-	$message = str_replace('\n',"<br />", $message);
-	
+
+	$from = $conf->global->MAIN_INFO_SOCIETE_MAIL;
+
+	$message = str_replace('\n', "<br />", $message);
+
 	$deliveryreceipt = 0;//$conf->global->DELIVERY_RECEIPT_EMAIL;
-	$addr_cc = ($conf->global->CC_EMAIL ? $conf->global->MAIN_INFO_SOCIETE_MAIL: "");
+	$addr_cc = ($conf->global->CC_EMAIL ? $conf->global->MAIN_INFO_SOCIETE_MAIL : "");
 
-	if (!empty($conf->global->CC_EMAILS)){
-		$addr_cc.= (empty($addr_cc) ? $conf->global->CC_EMAILS : ','.$conf->global->CC_EMAILS);
+	if (!empty($conf->global->CC_EMAILS)) {
+		$addr_cc .= (empty($addr_cc) ? $conf->global->CC_EMAILS : ',' . $conf->global->CC_EMAILS);
 	}
 
 	$mail = new CMailFile($subject, $sendto, $from, $message, array(), array(), array(), $addr_cc, "", $deliveryreceipt, 1);
 	$result = $mail->error;
-            
-    if (!$result)
-    {
-        $result = $mail->sendfile();
-        if ($result){
-            dol_syslog('CyberPlus: Confirmation payment email has been correctly sent');
-        }else{
-            dol_syslog('CyberPlus: Error sending confirmation payment email');
-        }
-    }
-    else
-    {
-        dol_syslog('CyberPlus: Error in creating confirmation payment email');
-    }    
-}
 
+	if (!$result) {
+		$result = $mail->sendfile();
+		if ($result) {
+			dol_syslog('CyberPlus: Confirmation payment email has been correctly sent');
+		} else {
+			dol_syslog('CyberPlus: Error sending confirmation payment email');
+		}
+	} else {
+		dol_syslog('CyberPlus: Error in creating confirmation payment email');
+	}
+}
 
 
 $db->close();

@@ -17,16 +17,16 @@
  */
 
 /**
- * 		\defgroup   modFabrication     Module Fabrication
+ *        \defgroup   modFabrication     Module Fabrication
  *      \file       htdocs/core/modules/modFabrication.class.php
  *      \ingroup    modFabrication
  *      \brief      Description and activation file for module modFabrication
  */
-include_once(DOL_DOCUMENT_ROOT ."/core/modules/DolibarrModules.class.php");
+include_once(DOL_DOCUMENT_ROOT . "/core/modules/DolibarrModules.class.php");
 
 
 /**
- * 		\class      modCyberPlus
+ *        \class      modCyberPlus
  *      \brief      Description and activation class for module modCyberPlus
  */
 class modCyberPlus extends DolibarrModules
@@ -37,9 +37,9 @@ class modCyberPlus extends DolibarrModules
 	 */
 	function __construct($db)
 	{
-        global $langs, $conf;
+		global $langs, $conf;
 
-        $this->db = $db;
+		$this->db = $db;
 		// Id for module (must be unique).
 		// Use here a free id (See in Home -> System information -> Dolibarr for list of used modules id).
 		$this->numero = 170000;
@@ -56,7 +56,7 @@ class modCyberPlus extends DolibarrModules
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
 		$this->version = '2.0.0';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
-		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
+		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
 		$this->special = 0;
 		// Name of image file used for this module.
@@ -78,7 +78,7 @@ class modCyberPlus extends DolibarrModules
 		//							'barcode' => 0,                                  	// Set this to 1 if module has its own barcode directory (core/modules/barcode)
 		//							'models' => 0,                                   	// Set this to 1 if module has its own models directory (core/modules/xxx)
 		//							'css' => array('/mymodule/css/mymodule.css.php'),	// Set this to relative path of css file if module has its own css file
-	 	//							'js' => array('/mymodule/js/mymodule.js'),          // Set this to relative path of js file if module must load a js on all pages
+		//							'js' => array('/mymodule/js/mymodule.js'),          // Set this to relative path of js file if module must load a js on all pages
 		//							'hooks' => array('hookcontext1','hookcontext2')  	// Set here all hooks context managed by module
 		//							'workflow' => array('WORKFLOW_MODULE1_YOURACTIONTYPE_MODULE2'=>array('enabled'=>'! empty($conf->module1->enabled) && ! empty($conf->module2->enabled)', 'picto'=>'yourpicto@mymodule')) // Set here all workflow context managed by module
 		//                        );
@@ -90,114 +90,112 @@ class modCyberPlus extends DolibarrModules
 		// Data directories to create when module is enabled.
 		// Example: this->dirs = array("/mymodule/temp");
 		$this->dirs = array();
-		$r=0;
+		$r = 0;
 
 		// Config pages. Put here list of php page names stored in admmin directory used to setup module.
 		$this->config_page_url = array('config.php@cyberplus');
 
 		// Dependencies
-		$this->depends = array();		// List of modules id that must be enabled if this module is enabled
-		$this->conflictwith = array('modPaypal', 'modPaybox');	
-		$this->phpmin = array(5,0);					// Minimum version of PHP required by module
-		$this->need_dolibarr_version = array(3,2);	// Minimum version of Dolibarr required by module
+		$this->depends = array();        // List of modules id that must be enabled if this module is enabled
+		$this->conflictwith = array('modPaypal', 'modPaybox');
+		$this->phpmin = array(5, 0);                    // Minimum version of PHP required by module
+		$this->need_dolibarr_version = array(3, 2);    // Minimum version of Dolibarr required by module
 		$this->langfiles = array("cyberplus@cyberplus");
 
 		// Constants
 		$this->const = array(
-			0 => array('CYBERPLUS_URL_SERVER_TEST','chaine','https://paiement.systempay.fr/vads-payment/','',0),
-			1 => array('CYBERPLUS_URL_SERVER','chaine','https://paiement.systempay.fr/vads-payment/','', 0),
+			0 => array('CYBERPLUS_URL_SERVER_TEST', 'chaine', 'https://paiement.systempay.fr/vads-payment/', '', 0),
+			1 => array('CYBERPLUS_URL_SERVER', 'chaine', 'https://paiement.systempay.fr/vads-payment/', '', 0),
 		);
 
-        $this->tabs = array();
-        // Dictionnaries
-        $this->dictionnaries = array();
+		$this->tabs = array();
+		// Dictionnaries
+		$this->dictionnaries = array();
 
-        // Boxes
+		// Boxes
 		// Add here list of php file(s) stored in includes/boxes that contains class to show a box.
-        $this->boxes = array();			// List of boxes
+		$this->boxes = array();            // List of boxes
 
 
 		// Permissions
-		$this->rights = array();		// Permission array used by this module
-        $this->rights[$r][0] = 170001; 				// Permission id (must not be already used)
-        $this->rights[$r][1] = 'Classer les factures payées';	 // Permission label
-        $this->rights[$r][3] = 0; 					 // Permission by default for new user (0/1)
-        $this->rights[$r][4] = 'invoice';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
-        $this->rights[$r][5] = 'update';				 // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
-        $r++; 
-        
-        $this->rights[$r][0] = 170002; 				// Permission id (must not be already used)
-        $this->rights[$r][1] = 'Clôturer les commandes payées';	 // Permission label
-        $this->rights[$r][3] = 0; 					 // Permission by default for new user (0/1)
-        $this->rights[$r][4] = 'order';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
-        $this->rights[$r][5] = 'close';				 // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
-        $r++;
-        
-        $this->rights[$r][0] = 170003; 				// Permission id (must not be already used)
-        $this->rights[$r][1] = 'Convertir les commandes payées en factures';	 // Permission label
-        $this->rights[$r][3] = 0; 					 // Permission by default for new user (0/1)
-        $this->rights[$r][4] = 'order';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
-        $this->rights[$r][5] = 'convert';				 // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
-        $r++;
-        
-        $this->rights[$r][0] = 170004; 				// Permission id (must not be already used)
-        $this->rights[$r][1] = 'Créer des écritures correspondant aux paiements';	 // Permission label
-        $this->rights[$r][3] = 0; 					 // Permission by default for new user (0/1)
-        $this->rights[$r][4] = 'payments';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
-        $this->rights[$r][5] = 'set';				 // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
-        $r++;
-        
-        $this->rights[$r][0] = 170005; 				// Permission id (must not be already used)
-        $this->rights[$r][1] = 'Emettre un email de confirmation de paiement';	 // Permission label
-        $this->rights[$r][3] = 0; 					 // Permission by default for new user (0/1)
-        $this->rights[$r][4] = 'email';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
-        $this->rights[$r][5] = 'send';				 // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
-        $r++;
-	
+		$this->rights = array();        // Permission array used by this module
+		$this->rights[$r][0] = 170001;                // Permission id (must not be already used)
+		$this->rights[$r][1] = 'Classer les factures payées';     // Permission label
+		$this->rights[$r][3] = 0;                     // Permission by default for new user (0/1)
+		$this->rights[$r][4] = 'invoice';                // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+		$this->rights[$r][5] = 'update';                 // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+		$r++;
+
+		$this->rights[$r][0] = 170002;                // Permission id (must not be already used)
+		$this->rights[$r][1] = 'Clôturer les commandes payées';     // Permission label
+		$this->rights[$r][3] = 0;                     // Permission by default for new user (0/1)
+		$this->rights[$r][4] = 'order';                // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+		$this->rights[$r][5] = 'close';                 // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+		$r++;
+
+		$this->rights[$r][0] = 170003;                // Permission id (must not be already used)
+		$this->rights[$r][1] = 'Convertir les commandes payées en factures';     // Permission label
+		$this->rights[$r][3] = 0;                     // Permission by default for new user (0/1)
+		$this->rights[$r][4] = 'order';                // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+		$this->rights[$r][5] = 'convert';                 // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+		$r++;
+
+		$this->rights[$r][0] = 170004;                // Permission id (must not be already used)
+		$this->rights[$r][1] = 'Créer des écritures correspondant aux paiements';     // Permission label
+		$this->rights[$r][3] = 0;                     // Permission by default for new user (0/1)
+		$this->rights[$r][4] = 'payments';                // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+		$this->rights[$r][5] = 'set';                 // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+		$r++;
+
+		$this->rights[$r][0] = 170005;                // Permission id (must not be already used)
+		$this->rights[$r][1] = 'Emettre un email de confirmation de paiement';     // Permission label
+		$this->rights[$r][3] = 0;                     // Permission by default for new user (0/1)
+		$this->rights[$r][4] = 'email';                // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+		$this->rights[$r][5] = 'send';                 // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+		$r++;
+
 	}
 
 	/**
-	 *		Function called when module is enabled.
-	 *		The init function add constants, boxes, permissions and menus (defined in constructor) into Dolibarr database.
-	 *		It also creates data directories.
-	 *      @return     int             1 if OK, 0 if KO
+	 *        Function called when module is enabled.
+	 *        The init function add constants, boxes, permissions and menus (defined in constructor) into Dolibarr database.
+	 *        It also creates data directories.
+	 * @return     int             1 if OK, 0 if KO
 	 */
-	function init($options='')
+	function init($options = '')
 	{
-	   global $conf;
+		global $conf;
 
-	   $sql = array();
+		$sql = array();
 
 		$result = $this->load_tables();
 
 		return $this->_init($sql, $options);
 	}
 
-
 	/**
-	 *		Function called when module is disabled.
-	 *      Remove from database constants, boxes and permissions from Dolibarr database.
-	 *		Data directories are not deleted.
-	 *      @return     int             1 if OK, 0 if KO
-	 */
-	function remove($options='')
-	{
-		$sql = array();
-
-		return $this->_remove($sql, $options);
-	}
-
-
-	/**
-	 *		\brief		Create tables, keys and data required by module
-	 * 					Files llx_table1.sql, llx_table1.key.sql llx_data.sql with create table, create keys
-	 * 					and create data commands must be stored in directory /mymodule/sql/
-	 *					This function is called by this->init.
-	 * 		\return		int		<=0 if KO, >0 if OK
+	 *        \brief        Create tables, keys and data required by module
+	 *                    Files llx_table1.sql, llx_table1.key.sql llx_data.sql with create table, create keys
+	 *                    and create data commands must be stored in directory /mymodule/sql/
+	 *                    This function is called by this->init.
+	 *        \return        int        <=0 if KO, >0 if OK
 	 */
 	function load_tables()
 	{
 		return $this->_load_tables('/cyberplus/sql/');
+	}
+
+	/**
+	 *        Function called when module is disabled.
+	 *      Remove from database constants, boxes and permissions from Dolibarr database.
+	 *        Data directories are not deleted.
+	 * @return     int             1 if OK, 0 if KO
+	 */
+	function remove($options = '')
+	{
+		$sql = array();
+
+		return $this->_remove($sql, $options);
 	}
 }
 

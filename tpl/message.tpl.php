@@ -16,12 +16,12 @@
  */
 
 /**
- *     	\file       htdocs/public/cmcic/tpl/message.php
- *		\ingroup    cmcic
+ *        \file       htdocs/public/cmcic/tpl/message.php
+ *        \ingroup    cmcic
  */
- 
-if (empty($conf->cyberplus->enabled)) 
-    exit;
+
+if (empty($conf->cyberplus->enabled))
+	exit;
 
 header('Content-type: text/html; charset=utf-8');
 ?>
@@ -29,75 +29,76 @@ header('Content-type: text/html; charset=utf-8');
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <meta name="robots" content="noindex,nofollow" />
-    <title><?php echo $langs->trans('PaymentFormTitle'); ?></title>
-    <link rel="stylesheet" type="text/css" href="<?php echo DOL_URL_ROOT.$conf->css.'?lang='.$langs->defaultlang; ?>" />
-    <style type="text/css">
-        body{
-            width : 50%; 
-            margin: auto;
-            text-align : center;
-        }
-        
-        #logo{
-            width : 100%;
-            margin : 30px 0px 30px 0px;
-        }       
+	<meta name="robots" content="noindex,nofollow"/>
+	<title><?php echo $langs->trans('PaymentFormTitle'); ?></title>
+	<link rel="stylesheet" type="text/css"
+		  href="<?php echo DOL_URL_ROOT . $conf->css . '?lang=' . $langs->defaultlang; ?>"/>
+	<style type="text/css">
+		body {
+			width: 50%;
+			margin: auto;
+			text-align: center;
+		}
 
-        #payment-content{
-            width : 100%;
-            text-align : center;
-        }
-        
-        #payment-table{
-            width : 100%;
-            text-align : left;
-            border : 1px solid #000;            
-        }
+		#logo {
+			width: 100%;
+			margin: 30px 0px 30px 0px;
+		}
 
-        #payment-table tr{
-            width : 100%;
-        }        
-        
-        .liste_total{
-            text-align : left;
-        }
-        
-        .payment-row-left{
-            width : 40%;
-            text-align : left;
+		#payment-content {
+			width: 100%;
+			text-align: center;
+		}
 
-        }
-        
-        .payment-row-right{
-            width : 60%;
-            text-align : right;
-        } 
-        
-        .payment-button{
-            text-align : right;  
-        }                 
-    </style>
+		#payment-table {
+			width: 100%;
+			text-align: left;
+			border: 1px solid #000;
+		}
+
+		#payment-table tr {
+			width: 100%;
+		}
+
+		.liste_total {
+			text-align: left;
+		}
+
+		.payment-row-left {
+			width: 40%;
+			text-align: left;
+
+		}
+
+		.payment-row-right {
+			width: 60%;
+			text-align: right;
+		}
+
+		.payment-button {
+			text-align: right;
+		}
+	</style>
 </head>
 
 <body>
-    <div id="logo">
-    <?php if (!empty($urlLogo)) { ?>    
-            <img id="paymentlogo" title="<?php echo $societyName; ?>" src="<?php echo $urlLogo; ?>" alt="" />
-        <?php } ?>
-    </div>
-    <div id="payment-content">
-        <h1><?php echo $welcomeTitle; ?></h1>
-        <p><?php echo $message; ?></p>
-    </div>
-    <script type="text/javascript">
-    
-    /*const myTimeout = setTimeout(close, 3000);
+<div id="logo">
+	<?php if (!empty($urlLogo)) { ?>
+		<img id="paymentlogo" title="<?php echo $societyName; ?>" src="<?php echo $urlLogo; ?>" alt=""/>
+	<?php } ?>
+</div>
+<div id="payment-content">
+	<h1><?php echo $welcomeTitle; ?></h1>
+	<p><?php echo $message; ?></p>
+</div>
+<script type="text/javascript">
 
-    function close() {
-        document.getElementById("payment-content").style.display = 'none';
-    }*/
+	/*const myTimeout = setTimeout(close, 3000);
 
-    </script>
+	function close() {
+		document.getElementById("payment-content").style.display = 'none';
+	}*/
+
+</script>
 </body>
 </html>

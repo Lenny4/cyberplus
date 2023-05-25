@@ -16,12 +16,12 @@
  */
 
 /**
- *     	\file       htdocs/public/cmcic/tpl/message.php
- *		\ingroup    cmcic
+ *        \file       htdocs/public/cmcic/tpl/message.php
+ *        \ingroup    cmcic
  */
- 
-if (empty($conf->cyberplus->enabled)) 
-    exit;
+
+if (empty($conf->cyberplus->enabled))
+	exit;
 
 /*header('Content-type: text/html; charset=utf-8');*/
 
@@ -30,75 +30,80 @@ if (empty($conf->cyberplus->enabled))
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <meta name="robots" content="noindex,nofollow" />
-    <title><?php echo $langs->trans('PaymentFormTitle'); ?></title>
-    <link rel="stylesheet" type="text/css" href="<?php echo DOL_URL_ROOT.$conf->css.'?lang='.$langs->defaultlang; ?>" />
-    <style type="text/css">
-        body{
-            width : 50%; 
-            margin: auto;
-            text-align : center;
-        }
-        
-        #logo{
-            width : 100%;
-            margin : 30px 0px 30px 0px;
-        }       
+	<meta name="robots" content="noindex,nofollow"/>
+	<title><?php echo $langs->trans('PaymentFormTitle'); ?></title>
+	<link rel="stylesheet" type="text/css"
+		  href="<?php echo DOL_URL_ROOT . $conf->css . '?lang=' . $langs->defaultlang; ?>"/>
+	<style type="text/css">
+		body {
+			width: 50%;
+			margin: auto;
+			text-align: center;
+		}
 
-        #payment-content{
-            width : 100%;
-            text-align : center;
-        }
-        
-        .payment-button{
-            text-align : right;  
-        } 
-        
-    #tablepay,td{
-        border: 1px solid black;
-        border-collapse: collapse;
-        text-align: center;
-    
-    }
-    #tablepay{
-        width: 70%;
-        height: 25%;
-        margin: auto;
-        background-color: white;
-    }
-    .divtab{
-      background-color: gray;
-      margin: 0 auto;
-    }
-    </style>
+		#logo {
+			width: 100%;
+			margin: 30px 0px 30px 0px;
+		}
+
+		#payment-content {
+			width: 100%;
+			text-align: center;
+		}
+
+		.payment-button {
+			text-align: right;
+		}
+
+		#tablepay, td {
+			border: 1px solid black;
+			border-collapse: collapse;
+			text-align: center;
+
+		}
+
+		#tablepay {
+			width: 70%;
+			height: 25%;
+			margin: auto;
+			background-color: white;
+		}
+
+		.divtab {
+			background-color: gray;
+			margin: 0 auto;
+		}
+	</style>
 </head>
 
 <body>
-    <div id="logo">
-    <?php if (!empty($urlLogo)) { ?>    
-            <img id="paymentlogo" title="<?php echo $societyName; ?>" src="<?php echo $urlLogo; ?>" alt="" />
-        <?php } ?>
-    </div>
-    <div id="payment-content">
-        <h1>choisissez votre mode de paiement</h1>
-    </div>
-    <div class="divtab">
-        <table id="tablepay">
-        <tr>
+<div id="logo">
+	<?php if (!empty($urlLogo)) { ?>
+		<img id="paymentlogo" title="<?php echo $societyName; ?>" src="<?php echo $urlLogo; ?>" alt=""/>
+	<?php } ?>
+</div>
+<div id="payment-content">
+	<h1>choisissez votre mode de paiement</h1>
+</div>
+<div class="divtab">
+	<table id="tablepay">
+		<tr>
 
-        <td>
-        <form action="<?php echo $urlServer; ?>" method="post" id="PaymentRequest">
-                    
-                    <input type="hidden" name="signature" value="<?php echo $signature; ?>" />
-                    <input class="button"  type="submit"  value="<?php echo $langs->trans('paiement en une fois'); ?>" onclick="openForm()"/>
-            <!--<a href="../tpl/payment.tpl.php/?urlServer="><img src="..\img\Logo_1fois.png" alt="Paiement en une fois" width="100px" height="70px" ></a>-->
-    </td>
-        <td><a><img src="..\img\Logo_4fois.png" alt="Paiement en plusieurs fois" width="100px" height="70px"></a></td>
-        </tr>
-    </table>   
-    </div>
-    <!--<div id="pop">
-    <iframe name="iframe" height="90%"  frameborder="0" id="idframe" scrolling="no"></iframe>
-    </div>-->
+			<td>
+				<form action="<?php echo $urlServer; ?>" method="post" id="PaymentRequest">
+
+					<input type="hidden" name="signature" value="<?php echo $signature; ?>"/>
+					<input class="button" type="submit" value="<?php echo $langs->trans('paiement en une fois'); ?>"
+						   onclick="openForm()"/>
+					<!--<a href="../tpl/payment.tpl.php/?urlServer="><img src="..\img\Logo_1fois.png" alt="Paiement en une fois" width="100px" height="70px" ></a>-->
+			</td>
+			<td><a><img src="..\img\Logo_4fois.png" alt="Paiement en plusieurs fois" width="100px" height="70px"></a>
+			</td>
+		</tr>
+	</table>
+</div>
+<!--<div id="pop">
+<iframe name="iframe" height="90%"  frameborder="0" id="idframe" scrolling="no"></iframe>
+</div>-->
 </body>
 </html>

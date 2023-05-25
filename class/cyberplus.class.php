@@ -22,35 +22,34 @@
  *      \brief      File of class to manage trips and working credit notes
  */
 
-require_once(DOL_DOCUMENT_ROOT ."/core/class/commonobject.class.php");
+require_once(DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
 
 
 class CyberPlus extends CommonObject
 {
 	var $db;
 	var $error;
-	
+
 	var $element = 'cyberplus';
 	var $table_element = 'cyberplus';
 	var $table_element_line = '';
 	var $fk_element = 'fk_cyberplus';
-	var $ismultientitymanaged = 0;	// 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
+	var $ismultientitymanaged = 0;    // 0=No test on entity, 1=Test with field entity, 2=Test with link by societe
 
-	
 
 	var $id;
 	var $ref;
 	var $key;
 	var $entity;
-	var $datec;			
+	var $datec;
 	var $type;
-	var $fk_object;	
-	
-	
-   /**
-	*  \brief  Constructeur de la classe
-	*  @param  DB          handler acces base de donnees
-	*/
+	var $fk_object;
+
+
+	/**
+	 *  \brief  Constructeur de la classe
+	 * @param DB          handler acces base de donnees
+	 */
 	function __construct($db)
 	{
 		$this->db = $db;
@@ -59,157 +58,141 @@ class CyberPlus extends CommonObject
 	/**
 	 * Fetch object from database
 	 *
-	 * @param 	id	    Id of the payment
-     * @param 	key  	Key of the payment
-	 * @return 	int		<0 if KO, >0 if OK
+	 * @param id        Id of the payment
+	 * @param key    Key of the payment
+	 * @return    int        <0 if KO, >0 if OK
 	 */
 	function fetch($id, $key = '')
 	{
-	    global $conf, $langs;
+		global $conf, $langs;
 
-        if (!$id && empty($key))
-        {
+		if (!$id && empty($key)) {
 			return -1;
-        }
-        
-        $sql = "SELECT c.rowid, c.ref, c.key, c.type, c.fk_object, c.datec";
-        $sql.= " FROM ".MAIN_DB_PREFIX."cyberplus as c";
-        $sql.= " WHERE c.entity = ".$conf->entity;
-    
-        if ($id)   $sql.= " AND c.rowid = ".$id;
-        if ($key)  $sql.= " AND c.key = '".$this->db->escape($key)."'";
+		}
 
-		dol_syslog("CyberPlus::fetch sql=".$sql, LOG_DEBUG);
+		$sql = "SELECT c.rowid, c.ref, c.key, c.type, c.fk_object, c.datec";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "cyberplus as c";
+		$sql .= " WHERE c.entity = " . $conf->entity;
+
+		if ($id) $sql .= " AND c.rowid = " . $id;
+		if ($key) $sql .= " AND c.key = '" . $this->db->escape($key) . "'";
+
+		dol_syslog("CyberPlus::fetch sql=" . $sql, LOG_DEBUG);
 
 		$result = $this->db->query($sql);
-		if ($result > 0)
-		{
+		if ($result > 0) {
 			$num = $this->db->num_rows($result);
-			
-			if ($num)
-			{
+
+			if ($num) {
 				$obj = $this->db->fetch_object($result);
 
-				$this->id                = $obj->rowid;
-				$this->ref               = $obj->ref;
-				$this->key               = $obj->key;
-				$this->entity            = $obj->entity;
-				$this->datec             = $this->db->jdate($obj->datec);			
-				$this->type    			= trim($obj->type);
-				$this->fk_object    	= $obj->fk_object;
+				$this->id = $obj->rowid;
+				$this->ref = $obj->ref;
+				$this->key = $obj->key;
+				$this->entity = $obj->entity;
+				$this->datec = $this->db->jdate($obj->datec);
+				$this->type = trim($obj->type);
+				$this->fk_object = $obj->fk_object;
 
 				return $this->id;
-            }
-            else
-            {
-            	return 0;
-            }
-		}
-		else
-		{
-			$this->error = $this->db->error()." sql=".$sql;
+			} else {
+				return 0;
+			}
+		} else {
+			$this->error = $this->db->error() . " sql=" . $sql;
 			return -1;
 		}
 	}
-	
+
 	/**
 	 * Fetch object from database
 	 *
-	 * @param 	object	    Object
-	 * @return 	string	
+	 * @param object        Object
+	 * @return    string
 	 */
 	function getLink($object)
 	{
-	    global $conf, $langs, $user;
+		global $conf, $langs, $user;
 
-	    $paymentLink = '';
+		$paymentLink = '';
 
-        if (!$object)
-        {
+		if (!$object) {
 			return -1;
-        }
-        
-        $type = ($object->element == 'facture' ? 'invoice' : 'order');
+		}
 
-        $sql = "SELECT c.rowid, c.ref, c.key, c.type, c.fk_object, c.datec";
-        $sql.= " FROM ".MAIN_DB_PREFIX."cyberplus as c";
-        $sql.= " WHERE c.fk_object = ".$object->id;
-        $sql.= " AND c.type = '".$this->db->escape($type)."'";
-    
+		$type = ($object->element == 'facture' ? 'invoice' : 'order');
 
-		dol_syslog("CyberPlus::getLink sql=".$sql, LOG_DEBUG);
+		$sql = "SELECT c.rowid, c.ref, c.key, c.type, c.fk_object, c.datec";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "cyberplus as c";
+		$sql .= " WHERE c.fk_object = " . $object->id;
+		$sql .= " AND c.type = '" . $this->db->escape($type) . "'";
+
+
+		dol_syslog("CyberPlus::getLink sql=" . $sql, LOG_DEBUG);
 
 		$result = $this->db->query($sql);
-		if ($result > 0)
-		{
+		if ($result > 0) {
 			$num = $this->db->num_rows($result);
-			
-			if ($num)
-			{
+
+			if ($num) {
 				$obj = $this->db->fetch_object($result);
-            	$payment_root_url = $conf->global->PAYMENT_ROOT_URL ? $conf->global->PAYMENT_ROOT_URL : dol_buildpath('/cyberplus/payment.php?key=', 2);
-            	
-				$paymentLink = $payment_root_url.$obj->key;
+				$payment_root_url = $conf->global->PAYMENT_ROOT_URL ? $conf->global->PAYMENT_ROOT_URL : dol_buildpath('/cyberplus/payment.php?key=', 2);
+
+				$paymentLink = $payment_root_url . $obj->key;
 				return $paymentLink;
-            }
-            else
-            {
-            	return null;
-            }
-            
-		}
-		else
-		{
-			$this->error = $this->db->error()." sql=".$sql;
+			} else {
+				return null;
+			}
+
+		} else {
+			$this->error = $this->db->error() . " sql=" . $sql;
 			return -1;
 		}
-	}	
+	}
+
 	/**
 	 * Create object in database
 	 *
-	 * @param 	$user	User that creates
-	 * @return 	int		<0 if KO, >0 if OK
+	 * @param    $user    User that creates
+	 * @return    int        <0 if KO, >0 if OK
 	 */
 	function create($user)
 	{
 		global $conf, $langs;
 
 
-        $this->datec = dol_now();
+		$this->datec = dol_now();
 
-		$sql = "INSERT INTO ".MAIN_DB_PREFIX."cyberplus (";
-        $sql.= "`ref`";
-        $sql.= ", `entity`";
-        $sql.= ", `datec`";
-        $sql.= ", `key`";
-        $sql.= ", `type`";
-		$sql.= ", `fk_object`";
-        $sql.= ") ";
-        $sql.= " VALUES (";
-		$sql.= " ".($this->ref ? "'".$this->db->escape($this->ref)."'" : "''");
-		$sql.= ", ".$conf->entity." ";
-        $sql.= ", '".$this->db->idate($this->datec)."'";
-        $sql.= ", ".($this->key ? "'".$this->db->escape($this->key)."'" : "''");
-        $sql.= ", ".($this->type ? "'".$this->db->escape($this->type)."'" : "''");
-		$sql.= ", ".($this->fk_object ? $this->fk_object : 0);
-		$sql.= ")";
+		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "cyberplus (";
+		$sql .= "`ref`";
+		$sql .= ", `entity`";
+		$sql .= ", `datec`";
+		$sql .= ", `key`";
+		$sql .= ", `type`";
+		$sql .= ", `fk_object`";
+		$sql .= ") ";
+		$sql .= " VALUES (";
+		$sql .= " " . ($this->ref ? "'" . $this->db->escape($this->ref) . "'" : "''");
+		$sql .= ", " . $conf->entity . " ";
+		$sql .= ", '" . $this->db->idate($this->datec) . "'";
+		$sql .= ", " . ($this->key ? "'" . $this->db->escape($this->key) . "'" : "''");
+		$sql .= ", " . ($this->type ? "'" . $this->db->escape($this->type) . "'" : "''");
+		$sql .= ", " . ($this->fk_object ? $this->fk_object : 0);
+		$sql .= ")";
 
-		dol_syslog("CyberPlus::create sql=".$sql, LOG_DEBUG);
+		dol_syslog("CyberPlus::create sql=" . $sql, LOG_DEBUG);
 
 		$result = $this->db->query($sql);
 
-		if ($result)
-		{
-			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX."cyberplus");
+		if ($result) {
+			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "cyberplus");
 			return $this->id;
-		}
-		else
-		{
-			$this->error = $this->db->error()." sql=".$sql;
+		} else {
+			$this->error = $this->db->error() . " sql=" . $sql;
 			return -1;
 		}
 
-	}	 
+	}
 }
 
 ?>

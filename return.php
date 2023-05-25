@@ -16,21 +16,20 @@
  */
 
 
+define("NOLOGIN", 1);        // This means this output page does not require to be logged.
+define("NOCSRFCHECK", 1);    // We accept to go on this page from external web site.
 
-define("NOLOGIN",1);		// This means this output page does not require to be logged.
-define("NOCSRFCHECK",1);	// We accept to go on this page from external web site.
+$res = @include("../main.inc.php");                    // For root directory
+if (!$res) $res = @include("../../main.inc.php");    // For "custom" directory
 
-$res=@include("../main.inc.php");					// For root directory
-if (! $res) $res=@include("../../main.inc.php");	// For "custom" directory
-
-require_once(DOL_DOCUMENT_ROOT."/core/lib/company.lib.php"); //permet l'appel des informations de statut juridique et nom de société
-require_once DOL_DOCUMENT_ROOT.'/core/lib/payments.lib.php'; //permet l'appel des informations de capital et n°siret
+require_once(DOL_DOCUMENT_ROOT . "/core/lib/company.lib.php"); //permet l'appel des informations de statut juridique et nom de société
+require_once DOL_DOCUMENT_ROOT . '/core/lib/payments.lib.php'; //permet l'appel des informations de capital et n°siret
 
 // Security check
-if (empty($conf->cyberplus->enabled)) 
-    accessforbidden('',1,1,1);
-    
-    
+if (empty($conf->cyberplus->enabled))
+	accessforbidden('', 1, 1, 1);
+
+
 $langs->load("main");
 $langs->load("other");
 $langs->load("dict");
@@ -38,18 +37,15 @@ $langs->load("cyberplus@cyberplus");
 
 // Define logo and logosmall
 $urlLogo = '';
-if (!empty($mysoc->logo_small) && is_readable($conf->mycompany->dir_output.'/logos/thumbs/'.$mysoc->logo_small))
-{
-	$urlLogo = DOL_URL_ROOT.'/viewimage.php?modulepart=mycompany&entity=1&file=logos%2'.urlencode('Fthumbs/'.$mysoc->logo_small);
-}
-elseif (! empty($mysoc->logo) && is_readable($conf->mycompany->dir_output.'/logos/'.$mysoc->logo))
-{
-	$urlLogo = DOL_URL_ROOT.'/viewimage.php?modulepart=mycompany&entity=1&file=logos%2'.urlencode($mysoc->logo);
+if (!empty($mysoc->logo_small) && is_readable($conf->mycompany->dir_output . '/logos/thumbs/' . $mysoc->logo_small)) {
+	$urlLogo = DOL_URL_ROOT . '/viewimage.php?modulepart=mycompany&entity=1&file=logos%2' . urlencode('Fthumbs/' . $mysoc->logo_small);
+} elseif (!empty($mysoc->logo) && is_readable($conf->mycompany->dir_output . '/logos/' . $mysoc->logo)) {
+	$urlLogo = DOL_URL_ROOT . '/viewimage.php?modulepart=mycompany&entity=1&file=logos%2' . urlencode($mysoc->logo);
 }
 
 $substit = array(
-    '__SOCNAM__' => $conf->global->MAIN_INFO_SOCIETE_NOM,
-    '__SOCMAI__' => $conf->global->MAIN_INFO_SOCIETE_MAIL,
+	'__SOCNAM__' => $conf->global->MAIN_INFO_SOCIETE_NOM,
+	'__SOCMAI__' => $conf->global->MAIN_INFO_SOCIETE_MAIL,
 );
 
 $welcomeTitle = make_substitutions($langs->transnoentities('InvoicePaymentFormWelcomeTitle'), $substit);

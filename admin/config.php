@@ -21,23 +21,20 @@ session_start(); //Démareage du système de session*/
  */
 
 
+$res = @include("../../main.inc.php");                // For root directory
+if (!$res) $res = @include("../../../main.inc.php");    // For "custom" directory
 
-$res=@include("../../main.inc.php");				// For root directory
-if (! $res) $res=@include("../../../main.inc.php");	// For "custom" directory
-
-require_once(DOL_DOCUMENT_ROOT."/core/lib/admin.lib.php");
-require_once(DOL_DOCUMENT_ROOT."/core/class/html.form.class.php");
-require_once(DOL_DOCUMENT_ROOT."/core/lib/functions2.lib.php");
-
+require_once(DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php");
+require_once(DOL_DOCUMENT_ROOT . "/core/class/html.form.class.php");
+require_once(DOL_DOCUMENT_ROOT . "/core/lib/functions2.lib.php");
 
 
 $langs->load('cyberplus@cyberplus');
 $langs->load('main');
 $langs->load('admin');
 
-if (!$user->admin)
-{
-   accessforbidden();
+if (!$user->admin) {
+	accessforbidden();
 }
 
 //Init error
@@ -68,16 +65,15 @@ $pay_conf_period = $conf->global->PAYMENT_CONF_PERIOD ? $conf->global->PAYMENT_C
 $action = GETPOST("action");
 
 // Sauvegarde parametres
-if ($action == 'update')
-{
-    $db->begin();
-	
+if ($action == 'update') {
+	$db->begin();
+
 	$api_test = trim(GETPOST("api_test"));
 	$api_key = trim(GETPOST("api_key"));
 	$api_shop_id = trim(GETPOST("api_shop_id"));
 	$security_token = trim(GETPOST("security_token"));
 	$payment_auto_send = trim(GETPOST("payment_auto_send"));
-	
+
 	$delivery_receipt_email = trim(GETPOST("delivery_receipt_email"));
 	$cc_email = trim(GETPOST("cc_email"));
 	$cc_emails = trim(GETPOST("cc_emails"));
@@ -89,54 +85,54 @@ if ($action == 'update')
 	$payment_id_3 = trim(GETPOST("payment_id_3"));//modification GIDM
 	$payment_id_4 = trim(GETPOST("payment_id_4"));//modification GIDM
 	$payment_root_url = trim(GETPOST("payment_root_url"));
-	$pay_conf_period =  trim(GETPOST("payment_config_period")) ;//modification GIDM
-		
-    dolibarr_set_const($db, 'API_TEST', $api_test, 'chaine', 0, '', $conf->entity);
+	$pay_conf_period = trim(GETPOST("payment_config_period"));//modification GIDM
+
+	dolibarr_set_const($db, 'API_TEST', $api_test, 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'API_KEY', $api_key, 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'API_SHOP_ID', $api_shop_id, 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'SECURITY_TOKEN', $security_token, 'chaine', 0, '', $conf->entity);
-		
-    dolibarr_set_const($db, 'DELIVERY_RECEIPT_EMAIL', $delivery_receipt_email, 'chaine', 0, '', $conf->entity);
+
+	dolibarr_set_const($db, 'DELIVERY_RECEIPT_EMAIL', $delivery_receipt_email, 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'CC_EMAIL', $cc_email, 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'CC_EMAILS', $cc_emails, 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'UPDATE_INVOICE_STATUT', $update_invoice_statut, 'chaine', 0, '', $conf->entity);
-	dolibarr_set_const($db, 'PAYMENT_AUTO_SEND', $payment_auto_send, 'chaine', 0, '', $conf->entity);	
+	dolibarr_set_const($db, 'PAYMENT_AUTO_SEND', $payment_auto_send, 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'BANK_ACCOUNT_ID', $bank_account_id, 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'BANK_ACCOUNT_PAYMENT_ID', $bank_account_payment_id, 'chaine', 0, '', $conf->entity);
-	
+
 	dolibarr_set_const($db, 'PAYMENT_ID', $payment_id, 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'PAYMENT_ID_2', $payment_id_2, 'chaine', 0, '', $conf->entity);//modification GIDM
 	dolibarr_set_const($db, 'PAYMENT_ID_3', $payment_id_3, 'chaine', 0, '', $conf->entity);//modification GIDM
-	dolibarr_set_const($db, 'PAYMENT_ID_4', $payment_id_4, 'chaine', 0, '', $conf->entity);	//modification GIDM
+	dolibarr_set_const($db, 'PAYMENT_ID_4', $payment_id_4, 'chaine', 0, '', $conf->entity);    //modification GIDM
 	dolibarr_set_const($db, 'PAYMENT_ROOT_URL', $payment_root_url, 'chaine', 0, '', $conf->entity);
-	dolibarr_set_const($db, 'PAYMENT_CONF_PERIOD', $pay_conf_period, 'chaine', 0, '', $conf->entity);//modification GIDM		
+	dolibarr_set_const($db, 'PAYMENT_CONF_PERIOD', $pay_conf_period, 'chaine', 0, '', $conf->entity);//modification GIDM
 
 	$db->commit();
-		
+
 	$message = $langs->trans("SetupSaved");
 	$error = false;
 }
 
-$linkback = '<a href="'.DOL_URL_ROOT.'/admin/modules.php">'.$langs->trans("BackToModuleList").'</a>';
+$linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">' . $langs->trans("BackToModuleList") . '</a>';
 
 $htmltooltips = array(
-    'ApiTest'    => $langs->trans("ApiTestTooltip"),
-    'ApiKey' => $langs->trans("ApiKeyTooltip"),
-    'ApiShopId'  => $langs->trans("ApiShipIdTooltip"),
-    'SecurityToken' => $langs->trans("SecurityTokenTooltip"),
-    'DeliveryReceiptEmail' => $langs->trans("DeliveryReceiptEmailTooltip"), 
-    'CcEmail' => $langs->trans("CcEmailTooltip"), 
-    'CcEmails' => $langs->trans("CcEmailsTooltip"), 
-    'UpdateInvoiceStatut' => $langs->trans("UpdateInvoiceStatutTooltip"), 
-    'BankAccountId' => $langs->trans("BankAccountIdTooltip"),
-    'BankAccountPaymentId' => $langs->trans("BankAccountPaymentIdTooltip"),
-    'PaymentId' => $langs->trans("PaymentIdTooltip"),
+	'ApiTest' => $langs->trans("ApiTestTooltip"),
+	'ApiKey' => $langs->trans("ApiKeyTooltip"),
+	'ApiShopId' => $langs->trans("ApiShipIdTooltip"),
+	'SecurityToken' => $langs->trans("SecurityTokenTooltip"),
+	'DeliveryReceiptEmail' => $langs->trans("DeliveryReceiptEmailTooltip"),
+	'CcEmail' => $langs->trans("CcEmailTooltip"),
+	'CcEmails' => $langs->trans("CcEmailsTooltip"),
+	'UpdateInvoiceStatut' => $langs->trans("UpdateInvoiceStatutTooltip"),
+	'BankAccountId' => $langs->trans("BankAccountIdTooltip"),
+	'BankAccountPaymentId' => $langs->trans("BankAccountPaymentIdTooltip"),
+	'PaymentId' => $langs->trans("PaymentIdTooltip"),
 	'PaymentId2' => $langs->trans("PaymentIdTooltip2"),
 	'PaymentId3' => $langs->trans("PaymentIdTooltip3"),
 	'PaymentId4' => $langs->trans("PaymentIdTooltip4"),
-    'PaymentAutoSend' => $langs->trans("PaymentAutoSendTooltip"),
-    'PaymentRootUrl' => $langs->trans("PaymentRootUrlTooltip"), 
-	'PaymentConfigPer' => $langs->trans("PaymentConfigPeriode"),                  
+	'PaymentAutoSend' => $langs->trans("PaymentAutoSendTooltip"),
+	'PaymentRootUrl' => $langs->trans("PaymentRootUrlTooltip"),
+	'PaymentConfigPer' => $langs->trans("PaymentConfigPeriode"),
 );
 
 $form = new Form($db);
