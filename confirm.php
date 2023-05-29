@@ -73,40 +73,28 @@ if ($error) {
 }
 
 // Controle signature
-$data = $_POST;
-$fields = array();
-foreach ($data as $name => $value) {
-	if (substr($name, 0, 5) == 'vads_') {
-		$name = substr($name, 5);
-		$fields[$name] = $value;
+$newData = [];
+$sortData = $_POST;
+ksort($sortData);
+foreach ($sortData as $key => $value) {
+	if ($key === 'MAC') {
+		continue;
 	}
+	$newData[] = $key . '=' . $value;
 }
-
-
-ksort($fields);
-$payment_config = $fields["payment_config"];
-$signature = '';
-$trans_id = $fields["trans_id"];
-
-foreach ($fields as $name => $value) {
-	$signature .= $value . '+';
-}
-$signature .= $conf->global->API_KEY;
-$signature = sha1($signature);
-$received = GETPOST('signature');
-
-if (strcmp($signature, $received) != 0) {
+$paiement = implode('*', $newData);
+$mac = CyberPlus::computeHmac($paiement, $conf->global->KEY_MONETICO);
+if (strtolower((string)$_POST["MAC"]) !== $mac) {
 	$error = true;
-	dol_syslog('CyberPlus: Received signature differs. Received : ' . $received . ', computed : ' . $signature);
+	dol_syslog('CyberPlus: Received signature differs. Received : ' . $_POST["MAC"] . ', computed : ' . $mac);
 }
 
 if ($error) {
 	exit;
 }
 
-$key = $fields['order_id'];
 $cyberplus = new CyberPlus($db);
-$result = $cyberplus->fetch('', $key);
+$result = $cyberplus->fetch('', $_POST["reference"]);
 
 
 if ($result <= 0) {
@@ -123,10 +111,10 @@ $item->fetch_thirdparty();
 
 $referenceDolibarr = $item->ref;
 
-$dateTransaction = $fields['trans_date'];
-$referenceAutorisation = $fields['auth_number'];
+$dateTransaction = $_POST["date"];
+$referenceAutorisation = $_POST["texte-libre"];
 
-$amountTransaction = $fields['effective_amount'];
+$amountTransaction = $_POST["montant"];
 $clientBankName = '';
 $clientName = $item->thirdparty->name;
 
@@ -138,20 +126,17 @@ $substit = array(
 	'__AMOOBJ__' => $amountTransaction / 100,
 );
 
-$vads_result = intval($fields['result']);
-$success = ($vads_result == 0 ? true : false);
+$vads_result = $_POST["code-retour"];
+if ($conf->global->API_TEST) {
+	$success = $vads_result === 'payetest';
+} else {
+	$success = $vads_result === 'paiement';
+}
 
-$presentation_date = $fields['presentation_date']; //modification GIDM
-$split_presentation_date = str_split($presentation_date, 2); //modification GIDM
+//$presentation_date = $_POST["date"]; //modification GIDM
+//$split_presentation_date = str_split($presentation_date, 2); //modification GIDM
 
-$unix_presentation_date = gmmktime( //modification GIDM
-	$split_presentation_date['4'],
-	$split_presentation_date['5'],
-	$split_presentation_date['6'],
-	$split_presentation_date['2'],
-	$split_presentation_date['3'],
-	$split_presentation_date['0'] . $split_presentation_date['1']
-);
+$unix_presentation_date = date_create_from_format('d/m/Y H:m:s', str_replace('_a_', ' ', $_POST["date"]))->getTimestamp();
 
 // Update DB
 if ($success) {
@@ -177,7 +162,7 @@ if ($success) {
 
 	$db->begin();
 
-	$amount = $amountTransaction / 100; // Convert to EUR
+	$amount = (float)$amountTransaction; // Convert to EUR
 
 
 	// Creation of payment line
@@ -186,9 +171,9 @@ if ($success) {
 	$payment->amounts = array($id => price2num($amount));
 	//$payment->amount      = $amount;
 	$payment->paiementid = $conf->global->BANK_ACCOUNT_PAYMENT_ID ? $conf->global->BANK_ACCOUNT_PAYMENT_ID : dol_getIdFromCode($db, 'CB', 'c_paiement');
-	$payment->num_paiement = $referenceAutorisation;
+//	$payment->num_paiement = $referenceAutorisation;
 	$payment->num_payment = $trans_id; //modification GIDM
-	$payment->note = '';
+//	$payment->note = '';
 
 	// Fix agenda module
 	$salesrep = $item->thirdparty->getSalesRepresentatives($user);
@@ -283,4 +268,5 @@ if (!$error) {
 
 
 $db->close();
-?>
+
+echo "version=2\ncdr=0\n";

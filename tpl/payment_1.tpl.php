@@ -204,7 +204,7 @@ header('Content-type: text/html; charset=utf-8');
 			<td colspan="2" class="payment-button_1" width="90%">
 				<form action="<?php echo $urlServer; ?>" method="post" id="PaymentRequest" target=iframe>
 					<?php foreach ($fields as $name => $value) { ?>
-						<input type="hidden" name="vads_<?php echo $name; ?>" value="<?php echo $value; ?>"/>
+						<input type="hidden" name="<?php echo $name; ?>" value="<?php echo $value; ?>"/>
 					<?php } ?>
 					<input type="hidden" name="signature" value="<?php echo $signature; ?>"/>
 					<input class="cb_1" type="image" src="img/Logo_CB_1.png" value="Payer" onclick="openForm()"/>

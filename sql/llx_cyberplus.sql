@@ -29,3 +29,7 @@ CREATE TABLE IF NOT EXISTS `llx_cyberplus`
     PRIMARY KEY (`rowid`)
 ) ENGINE = innodb
   DEFAULT CHARSET = utf8;
+
+UPDATE `llx_const` SET `value` = 'https://p.monetico-services.com/test/paiement.cgi' WHERE `llx_const`.`name` = 'CYBERPLUS_URL_SERVER_TEST';
+
+UPDATE `llx_const` SET `value` = 'https://paiement.creditmutuel.fr/paiement.cgi' WHERE `llx_const`.`name` = 'CYBERPLUS_URL_SERVER';

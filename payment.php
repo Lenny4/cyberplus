@@ -189,85 +189,38 @@ if (!$error) {
 	$First = $x;
 
 	$fields = array(
-		'ctx_mode' => ($conf->global->API_TEST ? 'TEST' : 'PRODUCTION'),
-		'version' => 'V2',
-		'language' => $language,
-		'site_id' => $conf->global->API_SHOP_ID,
-		'currency' => 978,
-		'page_action' => 'PAYMENT',
-		'action_mode' => 'INTERACTIVE',
-		'payment_config' => 'SINGLE',
-		'return_mode' => 'POST',
-		'redirect_success_timeout' => 3,
-		'redirect_error_timeout' => 3,
-		'redirect_success_message' => utf8_encode(trim($langs->trans('RedirectSuccessMessage'))),
-		'redirect_error_message' => utf8_encode(trim($langs->trans('RedirectErrorMessage'))),
-		'amount' => $amountTransactionNum,
-		'order_id' => $key,
-		'cust_id' => $customerId,
-		'cust_name' => $customerName,
-		'cust_address' => $customerAddress,
-		'cust_zip' => $customerZip,
-		'cust_city' => $customerCity,
-		'cust_country' => $customerCountry,
-		'cust_phone' => $customerPhone,
-		'cust_email' => $customerEmail,
-		'trans_id' => $idTransaction,
-		'trans_date' => $dateTransaction,
-		'url_error' => dol_buildpath('/cyberplus/error.php', 2),
-		'url_return' => dol_buildpath('/cyberplus/return.php', 2),
-		'url_success' => dol_buildpath('/cyberplus/success.php', 2),
-	);
-
-	$fields2 = array(
-		'ctx_mode' => ($conf->global->API_TEST ? 'TEST' : 'PRODUCTION'),
-		'version' => 'V2',
-		'language' => $language,
-		'site_id' => $conf->global->API_SHOP_ID,
-		'currency' => 978,
-		'page_action' => 'PAYMENT',
-		'action_mode' => 'INTERACTIVE',
-		'payment_config' => 'MULTI:first=' . $First . ';count=' . $count . ';period=' . $pay_conf_period, //modification GIDM
-		'return_mode' => 'POST',
-		'redirect_success_timeout' => 3,
-		'redirect_error_timeout' => 3,
-		'redirect_success_message' => utf8_encode(trim($langs->trans('RedirectSuccessMessage'))),
-		'redirect_error_message' => utf8_encode(trim($langs->trans('RedirectErrorMessage'))),
-		'amount' => $amountTransactionNum,
-		'order_id' => $key,
-		'cust_id' => $customerId,
-		'cust_name' => $customerName,
-		'cust_address' => $customerAddress,
-		'cust_zip' => $customerZip,
-		'cust_city' => $customerCity,
-		'cust_country' => $customerCountry,
-		'cust_phone' => $customerPhone,
-		'cust_email' => $customerEmail,
-		'trans_id' => $idTransaction,
-		'trans_date' => $dateTransaction,
-		'url_error' => dol_buildpath('/cyberplus/error.php', 2),
-		'url_return' => dol_buildpath('/cyberplus/return.php', 2),
-		'url_success' => dol_buildpath('/cyberplus/success.php', 2),
+		'TPE' => $conf->global->TPE_MONETICO,
+		'ThreeDSecureChallenge' => $conf->global->THREE_D_SECURE_CHALLENGE_MONETICO,
+		"contexte_commande" => base64_encode(json_encode([
+			'billing' => [
+				'addressLine1' => mb_strimwidth(empty($adresse1) ? 'addressLine1' : $adresse1, 0, 50, ''),
+				'city' => mb_strimwidth(empty($ctVille) ? 'city' : $ctVille, 0, 50, ''),
+				'postalCode' => mb_strimwidth(empty($ctCodepostal) ? 'postalCode' : $ctCodepostal, 0, 10, ''),
+				'country' => 'FR',
+			],
+		])),
+		'date' => date('d/m/Y:H:i:s'),
+		'lgue' => 'FR',
+		"mail" => $customerEmail,
+		"montant" => ($amountTransactionNum / 100) . "EUR",
+		"reference" => $key,
+		'societe' => $conf->global->SOCIETE_MONETICO,
+		'texte-libre' => $cyberplus->fk_object,
+		'url_retour_err' => dol_buildpath('/cyberplus/error.php', 2),
+		'url_retour_ok' => dol_buildpath('/cyberplus/success.php', 2),
+		'version' => '3.0',
 	);
 
 	ksort($fields);
-	ksort($fields2);
-
-	// Compute signature 1 & 2
-
-	$signature = '';
-	foreach ($fields as $name => $value) {
-		$signature .= $value . '+';
+	$paramHmac = [];
+	foreach ($fields as $key => $value) {
+		$paramHmac[] = $key . '=' . $value;
 	}
-	$signature .= $conf->global->API_KEY;
-	$signature = sha1($signature);
+	$mac = CyberPlus::computeHmac(implode('*', $paramHmac), $conf->global->KEY_MONETICO);
+	$fields['MAC'] = $mac;
 
-	$signature2 = '';
-	foreach ($fields2 as $name2 => $value2) {
-		$signature2 .= $value2 . '+';
-	}
-	$signature2 .= $conf->global->API_KEY;
-	$signature2 = sha1($signature2);
+	$fields2 = $fields;
+
 	/*
 	 * View
 	 */

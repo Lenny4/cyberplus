@@ -54,6 +54,34 @@ print_fiche_titre($langs->trans('CyberPlusAdmin'), $linkback, 'setup');
 	<table class="noborder" width="100%">
 
 		<tr class="liste_titre">
+			<td><?php echo $langs->trans("Monetico"); ?></td>
+			<td><?php echo $langs->trans("Value"); ?></td>
+			<td><?php echo $langs->trans("Infos"); ?></td>
+		</tr>
+		<?php
+		$i = 0;
+		foreach ($moneticoParam as $key => $value) {
+			$className = $i % 2 === 0 ? 'impair' : 'pair';
+			?>
+			<tr class="<?= $className ?>">
+				<td class="fieldrequired"><?php echo $langs->trans($key); ?></td>
+				<td>
+					<?php
+					if ($value['type'] === 'textarea') { ?>
+						<textarea size="32" name="<?= $key ?>"><?= $value['value'] ?></textarea>
+					<?php } else { ?>
+						<input size="32" type="text" name="<?= $key ?>" value="<?= $value['value'] ?>"/>
+					<?php }
+					?>
+				</td>
+				<td><?php echo $form->textwithpicto('', $htmltooltips[$key], 1, 0); ?></td>
+			</tr>
+			<?php
+			$i++;
+		}
+		?>
+
+		<tr class="liste_titre">
 			<td><?php echo $langs->trans("Configuration"); ?></td>
 			<td><?php echo $langs->trans("Value"); ?></td>
 			<td><?php echo $langs->trans("Infos"); ?></td>

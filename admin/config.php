@@ -41,6 +41,39 @@ if (!$user->admin) {
 $error = false;
 $message = false;
 
+$moneticoParam = [
+	'TPE_MONETICO' => [
+		'value' => $conf->global->TPE_MONETICO ?: '',
+		'type' => 'input',
+		'description' => 'Numéro de votre TPE virtuel',
+	],
+	'THREE_D_SECURE_CHALLENGE_MONETICO' => [
+		'value' => $conf->global->THREE_D_SECURE_CHALLENGE_MONETICO ?: 'challenge_mandated',
+		'type' => 'input',
+		'description' => "« no_preference » : pas de préférence (choix par défaut)<br><br>
+« challenge_preferred » : challenge souhaité<br><br>
+« challenge_mandated » : challenge requis<br><br>
+« no_challenge_requested » : pas de challenge demandé<br><br>
+« no_challenge_requested_strong_authentication » : pas de challenge demandé
+– l’authentification forte du client a déjà été réalisée par le commerçant.<br><br>
+« no_challenge_requested_trusted_third_party » : pas de challenge demandé –
+demande d’exemption car le commerçant est un bénéficiaire de confiance du
+client.<br><br>
+«no_challenge_requested_risk_analysis » : pas de challenge demandé –
+demande d’exemption pour un autre motif que cité précédemment (par exemple :
+petit montant)",
+	],
+	'SOCIETE_MONETICO' => [
+		'value' => $conf->global->SOCIETE_MONETICO ?: '',
+		'type' => 'input',
+		'description' => 'Code alphanumérique permettant au commerçant d’utiliser le même TPE Virtuel pour des sites différents (paramétrages distincts) se rapportant à la même activité. Il s’agit de votre code société.',
+	],
+	'KEY_MONETICO' => [
+		'value' => $conf->global->KEY_MONETICO ?: '',
+		'type' => 'textarea',
+		'description' => 'Clé de chiffrage',
+	],
+];
 
 $api_test = $conf->global->API_TEST ? $conf->global->API_TEST : 0;
 $api_key = $conf->global->API_KEY ? $conf->global->API_KEY : '';
@@ -107,6 +140,11 @@ if ($action == 'update') {
 	dolibarr_set_const($db, 'PAYMENT_ROOT_URL', $payment_root_url, 'chaine', 0, '', $conf->entity);
 	dolibarr_set_const($db, 'PAYMENT_CONF_PERIOD', $pay_conf_period, 'chaine', 0, '', $conf->entity);//modification GIDM
 
+	foreach ($moneticoParam as $key => $value) {
+		$newValue = trim(GETPOST($key));
+		dolibarr_set_const($db, $key, $newValue, 'chaine', 0, '', $conf->entity);
+	}
+
 	$db->commit();
 
 	$message = $langs->trans("SetupSaved");
@@ -134,6 +172,9 @@ $htmltooltips = array(
 	'PaymentRootUrl' => $langs->trans("PaymentRootUrlTooltip"),
 	'PaymentConfigPer' => $langs->trans("PaymentConfigPeriode"),
 );
+foreach ($moneticoParam as $key => $value) {
+	$htmltooltips[$key] = $value['description'];
+}
 
 $form = new Form($db);
 

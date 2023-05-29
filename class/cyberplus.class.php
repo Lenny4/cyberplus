@@ -193,6 +193,34 @@ class CyberPlus extends CommonObject
 		}
 
 	}
-}
 
-?>
+	static function computeHmac($sData, $key)
+	{
+		$data_cle = explode(' ', nl2br($key));
+		$cle = substr($data_cle[2], 0, -3);
+		$hexStrKey = substr($cle, 0, 38);
+		$hexFinal = substr($cle, 38, 2) . '00';
+
+		$cca0 = ord($hexFinal);
+
+		if ($cca0 > 70 && $cca0 < 97) {
+			$hexStrKey .= chr($cca0 - 23) . $hexFinal[1];
+		} elseif ($hexFinal[1] === 'M') {
+			$hexStrKey .= $hexFinal[0] . '0';
+		} else {
+			$hexStrKey .= substr($hexFinal, 0, 2);
+		}
+		$sUsableKey = pack('H*', $hexStrKey);
+		$length = 64; // block length for SHA1
+		if (strlen($sUsableKey) > $length) {
+			$sUsableKey = pack('H*', sha1($sUsableKey));
+		}
+		$sUsableKey = str_pad($sUsableKey, $length, chr(0x00));
+		$ipad = str_pad('', $length, chr(0x36));
+		$opad = str_pad('', $length, chr(0x5c));
+		$k_ipad = $sUsableKey ^ $ipad;
+		$k_opad = $sUsableKey ^ $opad;
+
+		return strtolower(sha1($k_opad . pack('H*', sha1($k_ipad . $sData))));
+	}
+}

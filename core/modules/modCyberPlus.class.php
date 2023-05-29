@@ -104,8 +104,8 @@ class modCyberPlus extends DolibarrModules
 
 		// Constants
 		$this->const = array(
-			0 => array('CYBERPLUS_URL_SERVER_TEST', 'chaine', 'https://paiement.systempay.fr/vads-payment/', '', 0),
-			1 => array('CYBERPLUS_URL_SERVER', 'chaine', 'https://paiement.systempay.fr/vads-payment/', '', 0),
+			0 => array('CYBERPLUS_URL_SERVER_TEST', 'chaine', 'https://p.monetico-services.com/test/paiement.cgi', '', 0),
+			1 => array('CYBERPLUS_URL_SERVER', 'chaine', 'https://paiement.creditmutuel.fr/paiement.cgi', '', 0),
 		);
 
 		$this->tabs = array();
