@@ -91,12 +91,16 @@ header('Content-type: text/html; charset=utf-8');
 
 		#pop {
 			position: absolute;
-			z-index: 2; /* permet de préciser l'empilement des éléments d'une page*/
+			z-index: 2;
 			width: 60%;
 			top: 185px;
-			left: 20%;
 			bottom: auto;
 			border-radius: 15px;
+			margin-left: auto;
+			margin-right: auto;
+			left: 0;
+			right: 0;
+			text-align: center;
 		}
 
 		#img_close {

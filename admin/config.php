@@ -74,6 +74,13 @@ petit montant)",
 		'description' => 'Clé de chiffrage',
 	],
 ];
+$action = GETPOST("action");
+
+if ($action == 'update') {
+	foreach ($moneticoParam as $key => $value) {
+		$moneticoParam[$key]['value'] = trim(GETPOST($key));
+	}
+}
 
 $api_test = $conf->global->API_TEST ? $conf->global->API_TEST : 0;
 $api_key = $conf->global->API_KEY ? $conf->global->API_KEY : '';
@@ -94,8 +101,6 @@ $payment_id_3 = $conf->global->PAYMENT_ID_3 ? $conf->global->PAYMENT_ID_3 : 0;//
 $payment_id_4 = $conf->global->PAYMENT_ID_4 ? $conf->global->PAYMENT_ID_4 : 0;//modification GIDM
 $payment_root_url = $conf->global->PAYMENT_ROOT_URL ? $conf->global->PAYMENT_ROOT_URL : '';
 $pay_conf_period = $conf->global->PAYMENT_CONF_PERIOD ? $conf->global->PAYMENT_CONF_PERIOD : ''; //modification GIDM
-
-$action = GETPOST("action");
 
 // Sauvegarde parametres
 if ($action == 'update') {

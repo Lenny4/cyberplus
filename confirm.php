@@ -57,15 +57,12 @@ $langs->load("cyberplus@cyberplus");
 $error = false;
 dol_syslog('CyberPlus: Check configuration');
 
-// Check module configuration
-if (empty($conf->global->API_KEY)) {
-	$error = true;
-	dol_syslog('CyberPlus: Configuration error : key is not defined');
-}
-
-if (empty($conf->global->API_SHOP_ID)) {
-	$error = true;
-	dol_syslog('CyberPlus: Configuration error : society ID is not defined');
+foreach (['TPE_MONETICO', 'THREE_D_SECURE_CHALLENGE_MONETICO', 'SOCIETE_MONETICO', 'KEY_MONETICO'] as $prop) {
+	if (empty($conf->global->{$prop})) {
+		$error = true;
+		$message = $langs->trans('ConfigurationError');
+		dol_syslog('CyberPlus: Configuration error : ' . $prop . ' is not defined');
+	}
 }
 
 if ($error) {
