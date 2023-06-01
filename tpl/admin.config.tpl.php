@@ -87,11 +87,11 @@ print_fiche_titre($langs->trans('CyberPlusAdmin'), $linkback, 'setup');
 			<td><?php echo $langs->trans("Infos"); ?></td>
 		</tr>
 
-<!--		<tr class="impair">-->
-<!--			<td class="fieldrequired">--><?php //echo $langs->trans("ApiTest"); ?><!--</td>-->
-<!--			<td>--><?php //echo $form->selectyesno("api_test", $api_test, 1); ?><!--</td>-->
-<!--			<td>--><?php //echo $form->textwithpicto('', $htmltooltips['ApiTest'], 1, 0); ?><!--</td>-->
-<!--		</tr>-->
+		<tr class="impair">
+			<td class="fieldrequired"><?php echo $langs->trans("ApiTest"); ?></td>
+			<td><?php echo $form->selectyesno("api_test", $api_test, 1); ?></td>
+			<td><?php echo $form->textwithpicto('', $htmltooltips['ApiTest'], 1, 0); ?></td>
+		</tr>
 <!---->
 <!--		<tr class="pair">-->
 <!--			<td class="fieldrequired">--><?php //echo $langs->trans("ApiKey"); ?><!--</td>-->
@@ -99,11 +99,11 @@ print_fiche_titre($langs->trans('CyberPlusAdmin'), $linkback, 'setup');
 <!--			<td>--><?php //echo $form->textwithpicto('', $htmltooltips['ApiKey'], 1, 0); ?><!--</td>-->
 <!--		</tr>-->
 
-		<tr class="impair">
-			<td class="fieldrequired"><?php echo $langs->trans("ApiShopId"); ?></td>
-			<td><input size="32" type="text" name="api_shop_id" value="<?php echo $api_shop_id; ?>"/></td>
-			<td><?php echo $form->textwithpicto('', $htmltooltips['ApiShopId'], 1, 0); ?></td>
-		</tr>
+<!--		<tr class="impair">-->
+<!--			<td class="fieldrequired">--><?php //echo $langs->trans("ApiShopId"); ?><!--</td>-->
+<!--			<td><input size="32" type="text" name="api_shop_id" value="--><?php //echo $api_shop_id; ?><!--"/></td>-->
+<!--			<td>--><?php //echo $form->textwithpicto('', $htmltooltips['ApiShopId'], 1, 0); ?><!--</td>-->
+<!--		</tr>-->
 
 		<tr class="liste_titre">
 			<td><?php echo $langs->trans("UsageParameters"); ?></td>
