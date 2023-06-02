@@ -48,7 +48,7 @@ print_fiche_titre($langs->trans('CyberPlusAdmin'), $linkback, 'setup');
 <?php echo $langs->trans("CyberPlusDesc"); ?>
 <br/>
 
-<form name="doliprintsetup" action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
+<form name="doliprintsetup" action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post" enctype="multipart/form-data">
 	<input type="hidden" name="action" value="update"/>
 	<input type="hidden" name="token" value="<?php echo $_SESSION['newtoken']; ?>"/>
 	<table class="noborder" width="100%">
@@ -64,7 +64,7 @@ print_fiche_titre($langs->trans('CyberPlusAdmin'), $linkback, 'setup');
 			$className = $i % 2 === 0 ? 'impair' : 'pair';
 			?>
 			<tr class="<?= $className ?>">
-				<td class="fieldrequired"><?php echo $langs->trans($key); ?></td>
+				<td class="fieldrequired"><?= $value['title'] ?></td>
 				<td>
 					<?php
 					if ($value['type'] === 'textarea') { ?>
@@ -80,6 +80,14 @@ print_fiche_titre($langs->trans('CyberPlusAdmin'), $linkback, 'setup');
 			$i++;
 		}
 		?>
+		<tr class="pair">
+			<td class="fieldrequired">Clé de sécurité</td>
+			<td>
+				<input size="32" type="file" name="KEY_MONETICO"/>
+				<span><?= $conf->global->KEY_MONETICO ?: '' ?></span>
+			</td>
+			<td><?php echo $form->textwithpicto('', 'Clé de chiffrage (format du fichier: XXXXXXX.key)', 1, 0); ?></td>
+		</tr>
 
 		<tr class="liste_titre">
 			<td><?php echo $langs->trans("Configuration"); ?></td>
@@ -92,18 +100,20 @@ print_fiche_titre($langs->trans('CyberPlusAdmin'), $linkback, 'setup');
 			<td><?php echo $form->selectyesno("api_test", $api_test, 1); ?></td>
 			<td><?php echo $form->textwithpicto('', $htmltooltips['ApiTest'], 1, 0); ?></td>
 		</tr>
-<!---->
-<!--		<tr class="pair">-->
-<!--			<td class="fieldrequired">--><?php //echo $langs->trans("ApiKey"); ?><!--</td>-->
-<!--			<td><input size="32" type="text" name="api_key" value="--><?php //echo $api_key; ?><!--"/></td>-->
-<!--			<td>--><?php //echo $form->textwithpicto('', $htmltooltips['ApiKey'], 1, 0); ?><!--</td>-->
-<!--		</tr>-->
+		<!---->
+		<!--		<tr class="pair">-->
+		<!--			<td class="fieldrequired">--><?php //echo $langs->trans("ApiKey"); ?><!--</td>-->
+		<!--			<td><input size="32" type="text" name="api_key" value="-->
+		<?php //echo $api_key; ?><!--"/></td>-->
+		<!--			<td>--><?php //echo $form->textwithpicto('', $htmltooltips['ApiKey'], 1, 0); ?><!--</td>-->
+		<!--		</tr>-->
 
-<!--		<tr class="impair">-->
-<!--			<td class="fieldrequired">--><?php //echo $langs->trans("ApiShopId"); ?><!--</td>-->
-<!--			<td><input size="32" type="text" name="api_shop_id" value="--><?php //echo $api_shop_id; ?><!--"/></td>-->
-<!--			<td>--><?php //echo $form->textwithpicto('', $htmltooltips['ApiShopId'], 1, 0); ?><!--</td>-->
-<!--		</tr>-->
+		<!--		<tr class="impair">-->
+		<!--			<td class="fieldrequired">--><?php //echo $langs->trans("ApiShopId"); ?><!--</td>-->
+		<!--			<td><input size="32" type="text" name="api_shop_id" value="-->
+		<?php //echo $api_shop_id; ?><!--"/></td>-->
+		<!--			<td>--><?php //echo $form->textwithpicto('', $htmltooltips['ApiShopId'], 1, 0); ?><!--</td>-->
+		<!--		</tr>-->
 
 		<tr class="liste_titre">
 			<td><?php echo $langs->trans("UsageParameters"); ?></td>
@@ -111,13 +121,15 @@ print_fiche_titre($langs->trans('CyberPlusAdmin'), $linkback, 'setup');
 			<td><?php echo $langs->trans("Infos"); ?></td>
 		</tr>
 
-<!--		<tr class="impair">-->
-<!--			<td class="fieldrequired">--><?php //echo $langs->trans("SecurityToken"); ?><!--</td>-->
-<!--			<td><input size="32" type="text" id="security_token" name="security_token"-->
-<!--					   value="--><?php //echo $security_token; ?><!--"/> --><?php //echo img_picto($langs->trans('Generate'), 'refresh', 'id="generate_token" class="linkobject"'); ?>
-<!--			</td>-->
-<!--			<td>--><?php //echo $form->textwithpicto('', $htmltooltips['SecurityToken'], 1, 0); ?><!--</td>-->
-<!--		</tr>-->
+		<!--		<tr class="impair">-->
+		<!--			<td class="fieldrequired">--><?php //echo $langs->trans("SecurityToken"); ?><!--</td>-->
+		<!--			<td><input size="32" type="text" id="security_token" name="security_token"-->
+		<!--					   value="-->
+		<?php //echo $security_token; ?><!--"/> --><?php //echo img_picto($langs->trans('Generate'), 'refresh', 'id="generate_token" class="linkobject"'); ?>
+		<!--			</td>-->
+		<!--			<td>-->
+		<?php //echo $form->textwithpicto('', $htmltooltips['SecurityToken'], 1, 0); ?><!--</td>-->
+		<!--		</tr>-->
 
 		<tr class="pair">
 			<td class="fieldrequired"><?php echo $langs->trans("DeliveryReceiptEmail"); ?></td>
@@ -173,23 +185,26 @@ print_fiche_titre($langs->trans('CyberPlusAdmin'), $linkback, 'setup');
 			<td><?php echo $form->textwithpicto('', $htmltooltips['PaymentId'], 1, 0); ?></td>
 		</tr>
 
-<!--		<tr class="pair">-->
-<!--			<td class="fieldrequired">--><?php //echo $langs->trans("PaymentId") . " 2 fois"; ?><!--</td>-->
-<!--			<td>--><?php //$form->select_types_paiements($payment_id_2, 'payment_id_2', '', 0, 1); ?><!--</td>-->
-<!--			<td>--><?php //echo $form->textwithpicto('', $htmltooltips['PaymentId2'], 1, 0); ?><!--</td>-->
-<!--		</tr>-->
-<!---->
-<!--		<tr class="impair">-->
-<!--			<td class="fieldrequired">--><?php //echo $langs->trans("PaymentId") . " 3 fois"; ?><!--</td>-->
-<!--			<td>--><?php //$form->select_types_paiements($payment_id_3, 'payment_id_3', '', 0, 1); ?><!--</td>-->
-<!--			<td>--><?php //echo $form->textwithpicto('', $htmltooltips['PaymentId3'], 1, 0); ?><!--</td>-->
-<!--		</tr>-->
-<!---->
-<!--		<tr class="pair">-->
-<!--			<td class="fieldrequired">--><?php //echo $langs->trans("PaymentId") . " 4 fois"; ?><!--</td>-->
-<!--			<td>--><?php //$form->select_types_paiements($payment_id_4, 'payment_id_4', '', 0, 1); ?><!--</td>-->
-<!--			<td>--><?php //echo $form->textwithpicto('', $htmltooltips['PaymentId4'], 1, 0); ?><!--</td>-->
-<!--		</tr>-->
+		<!--		<tr class="pair">-->
+		<!--			<td class="fieldrequired">--><?php //echo $langs->trans("PaymentId") . " 2 fois"; ?><!--</td>-->
+		<!--			<td>-->
+		<?php //$form->select_types_paiements($payment_id_2, 'payment_id_2', '', 0, 1); ?><!--</td>-->
+		<!--			<td>--><?php //echo $form->textwithpicto('', $htmltooltips['PaymentId2'], 1, 0); ?><!--</td>-->
+		<!--		</tr>-->
+		<!---->
+		<!--		<tr class="impair">-->
+		<!--			<td class="fieldrequired">--><?php //echo $langs->trans("PaymentId") . " 3 fois"; ?><!--</td>-->
+		<!--			<td>-->
+		<?php //$form->select_types_paiements($payment_id_3, 'payment_id_3', '', 0, 1); ?><!--</td>-->
+		<!--			<td>--><?php //echo $form->textwithpicto('', $htmltooltips['PaymentId3'], 1, 0); ?><!--</td>-->
+		<!--		</tr>-->
+		<!---->
+		<!--		<tr class="pair">-->
+		<!--			<td class="fieldrequired">--><?php //echo $langs->trans("PaymentId") . " 4 fois"; ?><!--</td>-->
+		<!--			<td>-->
+		<?php //$form->select_types_paiements($payment_id_4, 'payment_id_4', '', 0, 1); ?><!--</td>-->
+		<!--			<td>--><?php //echo $form->textwithpicto('', $htmltooltips['PaymentId4'], 1, 0); ?><!--</td>-->
+		<!--		</tr>-->
 
 		<tr class="pair">
 			<td class="fieldrequired"><?php echo $langs->trans("PaymentRootUrl"); ?></td>
@@ -198,11 +213,14 @@ print_fiche_titre($langs->trans('CyberPlusAdmin'), $linkback, 'setup');
 			<td><?php echo $form->textwithpicto('', $htmltooltips['PaymentRootUrl'], 1, 0); ?></td>
 		</tr>
 
-<!--		<tr class="impair">-->
-<!--			<td class="fieldrequired">--><?php //echo $langs->trans("Période du prélèvement en plusieurs fois"); ?><!--</td>-->
-<!--			<td><input size="32" type="text" name="payment_config_period" value="--><?php //echo $pay_conf_period; ?><!--"/></td>-->
-<!--			<td>--><?php //echo $form->textwithpicto('', $htmltooltips['PaymentConfigPer'], 1, 0); ?><!--</td>-->
-<!--		</tr>-->
+		<!--		<tr class="impair">-->
+		<!--			<td class="fieldrequired">-->
+		<?php //echo $langs->trans("Période du prélèvement en plusieurs fois"); ?><!--</td>-->
+		<!--			<td><input size="32" type="text" name="payment_config_period" value="-->
+		<?php //echo $pay_conf_period; ?><!--"/></td>-->
+		<!--			<td>-->
+		<?php //echo $form->textwithpicto('', $htmltooltips['PaymentConfigPer'], 1, 0); ?><!--</td>-->
+		<!--		</tr>-->
 	</table>
 
 	<br/>

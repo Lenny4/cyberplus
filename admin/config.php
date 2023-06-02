@@ -46,6 +46,7 @@ $moneticoParam = [
 		'value' => $conf->global->TPE_MONETICO ?: '',
 		'type' => 'input',
 		'description' => 'Numéro de votre TPE virtuel',
+		'title' => 'Numéro TPE',
 	],
 	'THREE_D_SECURE_CHALLENGE_MONETICO' => [
 		'value' => $conf->global->THREE_D_SECURE_CHALLENGE_MONETICO ?: 'challenge_mandated',
@@ -62,16 +63,13 @@ client.<br><br>
 «no_challenge_requested_risk_analysis » : pas de challenge demandé –
 demande d’exemption pour un autre motif que cité précédemment (par exemple :
 petit montant)",
+		'title' => 'Vérification 3D secure',
 	],
 	'SOCIETE_MONETICO' => [
 		'value' => $conf->global->SOCIETE_MONETICO ?: '',
 		'type' => 'input',
 		'description' => 'Code alphanumérique permettant au commerçant d’utiliser le même TPE Virtuel pour des sites différents (paramétrages distincts) se rapportant à la même activité. Il s’agit de votre code société.',
-	],
-	'KEY_MONETICO' => [
-		'value' => $conf->global->KEY_MONETICO ?: '',
-		'type' => 'textarea',
-		'description' => 'Clé de chiffrage',
+		'title' => 'Code site',
 	],
 ];
 $action = GETPOST("action");
@@ -148,6 +146,12 @@ if ($action == 'update') {
 	foreach ($moneticoParam as $key => $value) {
 		$newValue = trim(GETPOST($key));
 		dolibarr_set_const($db, $key, $newValue, 'chaine', 0, '', $conf->entity);
+	}
+
+	if (isset($_FILES['KEY_MONETICO'])) {
+		$filePath = __DIR__ . '/../' . $_FILES['KEY_MONETICO']['name'];
+		move_uploaded_file($_FILES['KEY_MONETICO']['tmp_name'], $filePath);
+		dolibarr_set_const($db, 'KEY_MONETICO', $_FILES['KEY_MONETICO']['name'], 'chaine', 0, '', $conf->entity);
 	}
 
 	$db->commit();

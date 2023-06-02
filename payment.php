@@ -211,7 +211,8 @@ if (!$error) {
 	foreach ($fields as $key => $value) {
 		$paramHmac[] = $key . '=' . $value;
 	}
-	$mac = CyberPlus::computeHmac(implode('*', $paramHmac), $conf->global->KEY_MONETICO);
+	$filePath = __DIR__ . '/' . $conf->global->KEY_MONETICO;
+	$mac = CyberPlus::computeHmac(implode('*', $paramHmac), file_get_contents($filePath));
 	$fields['MAC'] = $mac;
 
 	$fields2 = $fields;

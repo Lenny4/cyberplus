@@ -80,7 +80,8 @@ foreach ($sortData as $key => $value) {
 	$newData[] = $key . '=' . $value;
 }
 $paiement = implode('*', $newData);
-$mac = CyberPlus::computeHmac($paiement, $conf->global->KEY_MONETICO);
+$filePath = __DIR__ . '/' . $conf->global->KEY_MONETICO;
+$mac = CyberPlus::computeHmac($paiement, file_get_contents($filePath));
 if (strtolower((string)$_POST["MAC"]) !== $mac) {
 	$error = true;
 	dol_syslog('CyberPlus: Received signature differs. Received : ' . $_POST["MAC"] . ', computed : ' . $mac);
