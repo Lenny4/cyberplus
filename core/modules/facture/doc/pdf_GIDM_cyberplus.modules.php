@@ -35,6 +35,7 @@ require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/custom/cyberplus/core/modules/facture/doc/qrcode/qrcode.php';
 
 dol_include_once('/cyberplus/class/cyberplus.class.php');
 
@@ -1165,6 +1166,13 @@ class pdf_GIDM_cyberplus extends ModelePDFFactures
 					$pdf->SetXY($posxval, $posy - 3);
 					//$pdf->Cell(80, 3, $outputlangs->transnoentities("OnlinePaymentLink"), 0, 0, 'L', false, $payment_link);
 					$pdf->Cell(80, 3, $outputlangs->transnoentities("OnlinePaymentLink"), 0, 0, 'L', false, $payment_link);
+
+					$qr = QRCode::getMinimumQRCode($payment_link, QR_ERROR_CORRECT_LEVEL_L);
+					$im = $qr->createImage(2, 2);
+					$filename = __DIR__ . '/qrcode.png';
+					imagejpeg($im, $filename);
+					$pdf->Image($filename, $posxval + 30, $posy - 6, 0, 30);
+
 					$posy = $pdf->GetY() + 5;
 				}
 			}
@@ -1181,7 +1189,7 @@ class pdf_GIDM_cyberplus extends ModelePDFFactures
 
 						$pdf->SetXY($this->marge_gauche, $posy);
 						$pdf->SetFont('', 'B', $default_font_size - $diffsizetitle);
-						$pdf->MultiCell(100, 3, $outputlangs->transnoentities('PaymentByChequeOrderedTo', $account->proprio), 0, 'L', 0);
+						$pdf->MultiCell(70, 3, $outputlangs->transnoentities('PaymentByChequeOrderedTo', $account->proprio), 0, 'L', 0);
 						$posy = $pdf->GetY() + 1;
 
 						if (empty($conf->global->MAIN_PDF_HIDE_CHQ_ADDRESS)) {
