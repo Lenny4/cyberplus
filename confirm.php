@@ -134,8 +134,6 @@ if ($conf->global->API_TEST) {
 //$presentation_date = $_POST["date"]; //modification GIDM
 //$split_presentation_date = str_split($presentation_date, 2); //modification GIDM
 
-$unix_presentation_date = date_create_from_format('d/m/Y H:m:s', str_replace('_a_', ' ', $_POST["date"]))->getTimestamp();
-
 // Update DB
 if ($success) {
 	dol_syslog('CyberPlus: Payment accepted');
@@ -163,14 +161,14 @@ if ($success) {
 	$amount = (float)$amountTransaction; // Convert to EUR
 
 
+	$date = (new DateTime(null, new DateTimeZone('America/Guadeloupe')));
 	// Creation of payment line
 	$payment = new Paiement($db);
-	$payment->datepaye = $unix_presentation_date; //modification GIDM
+	$payment->datepaye = $date->getTimestamp(); //modification GIDM
 	$payment->amounts = array($id => price2num($amount));
 	//$payment->amount      = $amount;
-	$payment->paiementid = $conf->global->BANK_ACCOUNT_PAYMENT_ID ? $conf->global->BANK_ACCOUNT_PAYMENT_ID : dol_getIdFromCode($db, 'CB', 'c_paiement');
-//	$payment->num_paiement = $referenceAutorisation;
-	$payment->num_payment = $trans_id; //modification GIDM
+	$payment->paiementid = $conf->global->BANK_ACCOUNT_PAYMENT_ID ? $conf->global->BANK_ACCOUNT_PAYMENT_ID : dol_getIdFromCode($db, 'CB', 'c_paiement') . ' ' . $trans_id;
+	$payment->num_payment = $_POST["reference"]; //modification GIDM
 //	$payment->note = '';
 
 	// Fix agenda module
